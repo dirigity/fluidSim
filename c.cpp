@@ -13,7 +13,7 @@ struct particle
     double vy = 0;
 };
 
-const int ParticlesCount = 10000;
+const int ParticlesCount = 25000;
 const int GridSide = 23;
 
 typedef particle pile[ParticlesCount];
@@ -30,7 +30,7 @@ struct sector
 
 
 
-const double Viscosity = 1;
+const double Viscosity = 2;
 const double brownian = 0.05;
 
 typedef sector sectorRow[GridSide];
@@ -131,22 +131,22 @@ void reorganize(grid &grid, pile &pile)
 
             if (y != 0)
             {
-                grid[y][x].dragY -= min((grid[y][x].count - grid[y - 1][x].count) * 0.01, 0.1);
+                grid[y][x].dragY -= min((grid[y][x].count - grid[y - 1][x].count) * 0.005, 0.1);
             }
 
             if (y != GridSide - 1)
             {
-                grid[y][x].dragY += min((grid[y][x].count - grid[y + 1][x].count) * 0.01, 0.1);
+                grid[y][x].dragY += min((grid[y][x].count - grid[y + 1][x].count) * 0.005, 0.1);
             }
 
             if (x != 0)
             {
-                grid[y][x].dragX -= min((grid[y][x].count - grid[y][x - 1].count) * 0.01, 0.1);
+                grid[y][x].dragX -= min((grid[y][x].count - grid[y][x - 1].count) * 0.005, 0.1);
             }
 
             if (x != GridSide - 1)
             {
-                grid[y][x].dragX += min((grid[y][x].count - grid[y][x + 1].count) * 0.01, 0.1);
+                grid[y][x].dragX += min((grid[y][x].count - grid[y][x + 1].count) * 0.005, 0.1);
             }
 
             if (isnan(grid[y][x].dragX) || isnan(grid[y][x].dragY))
