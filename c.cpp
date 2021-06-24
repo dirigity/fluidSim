@@ -13,7 +13,7 @@ struct particle
     double vy = 0;
 };
 
-const int ParticlesCount = 5000;
+const int ParticlesCount = 10000;
 const int GridSide = 23;
 
 typedef particle pile[ParticlesCount];
@@ -26,6 +26,9 @@ struct sector
     double dragX = 0;
     double dragY = 0;
 };
+
+
+
 
 const double Viscosity = 1;
 const double brownian = 0.05;
@@ -40,6 +43,12 @@ const int practicalParticlesPerSector = ParticlesCount / (GridSide - 2 * GridSid
 const int minParticlesPerSector = particlesPerSector * 0.2;
 
 int particleCount = 0;
+
+struct Data
+{
+    pile _pile;
+    grid _grid;
+};
 
 particle MouseForce;
 
@@ -336,27 +345,27 @@ void simulateStep(grid &grid, pile &pile, double tDelta)
     }
 }
 bool ready = false;
-pile _pile;
-grid _grid;
+Data* data;
 
 void EMSCRIPTEN_KEEPALIVE JSStep(double tDelta)
 {
     if (ready)
-        simulateStep(_grid, _pile, tDelta);
+        simulateStep(data->_grid, data->_pile, tDelta);
 }
 
 int main()
 {
+    data = new Data();
     for (int y = 0; y < GridSide; y++)
     {
         for (int x = 0; x < GridSide; x++)
         {
             for (int h = 0; h < particlesPerSector; h++)
             {
-                _pile[particleCount].x = x * SectorSide + ((rand() % 100000) / 100000.) * SectorSide;
-                _pile[particleCount].y = y * SectorSide + ((rand() % 100000) / 100000.) * SectorSide;
-                _grid[y][x].habitatants[_grid[y][x].count] = particleCount;
-                _grid[y][x].count++;
+                data->_pile[particleCount].x = x * SectorSide + ((rand() % 100000) / 100000.) * SectorSide;
+                data->_pile[particleCount].y = y * SectorSide + ((rand() % 100000) / 100000.) * SectorSide;
+                data->_grid[y][x].habitatants[data->_grid[y][x].count] = particleCount;
+                data->_grid[y][x].count++;
                 particleCount++;
             }
 
@@ -384,12 +393,12 @@ int EMSCRIPTEN_KEEPALIVE JSGetParticleCount()
 
 double EMSCRIPTEN_KEEPALIVE JSGetX(int i)
 {
-    return _pile[i].x;
+    return data->_pile[i].x;
 }
 
 double EMSCRIPTEN_KEEPALIVE JSGetY(int i)
 {
-    return _pile[i].y;
+    return data->_pile[i].y;
 }
 
 double EMSCRIPTEN_KEEPALIVE JSGetSide(int i)
